@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from pathlib import Path
 
 from dotenv import dotenv_values
@@ -24,6 +25,7 @@ async def handle_text(update, context):  # noqa: ARG001
         session.commit()
         record_id = record.id
 
+    print_me(f"added id: {record_id}")
     await update.message.reply_text(f"text saved, id {record_id}")
 
 
@@ -44,7 +46,19 @@ async def handle_photo(update, context):  # noqa: ARG001
         session.add(record)
         session.commit()
         record_id = record.id
+
+    print_me(f"added id: {record_id}")
     await update.message.reply_text(f"image saved, id {record_id}")
+
+
+def print_me(txt):
+    print(
+        "\r",
+        datetime.strftime(datetime.now(UTC), "%Y-%m-%d %H:%M:%S.%f")[:-3],
+        txt,
+        end="",
+        flush=True
+    )
 
 
 def main():
@@ -60,5 +74,6 @@ def main():
     app.run_polling()
 
 if __name__ == "__main__":
+    print_me("Started")
     main()
 
