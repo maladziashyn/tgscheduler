@@ -1,0 +1,32 @@
+[project]
+name = "tgscheduler"
+version = "26.3"
+requires-python = ">= 3.14.3"
+authors = [
+    {name = "Raman Maladziashyn"},
+]
+description = "Send messages to my TG bot, schedule them to another chat."
+# readme = "README.md"
+
+# [project.urls]
+# Repository = ""
+
+[tool.ruff]
+exclude = [
+    ".git/",
+    "__pycache__/",
+    ".ruff_cache/",
+    "venv/",
+
+    # Files
+    "models_*.py",
+]
+
+lint.extend-select = [
+    # "E",  # Pycodestyle errors (style issues)
+]
+
+lint.ignore = [
+    # "D1",  # Pydocstyle - missing docstring in public module, class or funciton
+]
+
