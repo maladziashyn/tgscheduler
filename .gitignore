@@ -20,6 +20,8 @@ venv.bak/
 .ruff_cache/
 
 # misc
-bot_data.db
 images/
+bot_data.db
+*.log
+*.ipynb
 

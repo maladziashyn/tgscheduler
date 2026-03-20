@@ -1,7 +1,11 @@
-from datetime import UTC, datetime
+#!/home/rsm/projects/tgscheduler/venv/bin/python3
+
+import logging
 from pathlib import Path
+from time import gmtime
 
 from dotenv import dotenv_values
+from logging.handlers import TimedRotatingFileHandler
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from telegram.ext import ApplicationBuilder, MessageHandler, filters
@@ -16,6 +20,24 @@ engine = create_engine(conn_str)
 
 creds = dotenv_values(BASE_DIR / ".env")
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+file_handler = TimedRotatingFileHandler(
+    filename=BASE_DIR / "receiver.log",
+    when="W0",      # Rotate every week (W0 = Monday)
+    interval=1,     # Every 1 week
+    backupCount=52, # Keep last N weeks of logs
+)
+console_handler = logging.StreamHandler()
+formatter = logging.Formatter(
+    "%(asctime)s:%(name)s:%(levelname)s:%(message)s",
+)
+logging.Formatter.converter = gmtime
+file_handler.setFormatter(formatter)
+console_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
+
 
 async def handle_text(update, context):  # noqa: ARG001
     text = update.message.text
@@ -25,8 +47,8 @@ async def handle_text(update, context):  # noqa: ARG001
         session.commit()
         record_id = record.id
 
-    print_me(f"added id: {record_id}")
-    await update.message.reply_text(f"text saved, id {record_id}")
+    logger.info("Added id: %s.", record_id)
+    await update.message.reply_text(f"Text saved, id {record_id}.")
 
 
 async def handle_photo(update, context):  # noqa: ARG001
@@ -47,18 +69,18 @@ async def handle_photo(update, context):  # noqa: ARG001
         session.commit()
         record_id = record.id
 
-    print_me(f"added id: {record_id}")
-    await update.message.reply_text(f"image saved, id {record_id}")
+    logger.info("Added id: %s.", record_id)
+    await update.message.reply_text(f"Image saved, id {record_id}.")
 
 
-def print_me(txt):
-    print(
-        "\r",
-        datetime.strftime(datetime.now(UTC), "%Y-%m-%d %H:%M:%S.%f")[:-3],
-        txt,
-        end="",
-        flush=True
-    )
+#def print_me(txt):
+#    print(
+#        "\r",
+#        datetime.strftime(datetime.now(UTC), "%Y-%m-%d %H:%M:%S.%f")[:-3],
+#        txt,
+#        end="",
+#        flush=True
+#    )
 
 
 def main():
@@ -73,7 +95,8 @@ def main():
     ))
     app.run_polling()
 
+
 if __name__ == "__main__":
-    print_me("Started")
+    logger.info("START receiver.py")
     main()
 
