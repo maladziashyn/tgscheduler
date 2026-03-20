@@ -78,11 +78,7 @@ async def send_post():
             )
 
         # Mark record as used.
-        session.execute(
-            update(Content)
-            .where(Content.id == rand_id)
-            .values(used_count=Content.used_count+1)
-        )
+        record.used_count = (record.used_count or 0) + 1
         session.commit()
         logger.info("Sent record id: %s.", record.id)
 
