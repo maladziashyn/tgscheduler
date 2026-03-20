@@ -22,7 +22,7 @@ def main():
     img_dir.mkdir(parents=True, exist_ok=True)
 
     #with Path(BASE_DIR / ".env").open("w") as f:
-    #    f.write("bot_token=<your_token>\n")
+    #    f.write("bot_token=<your_token>\nsender_chat_id=<target_chat_id>\nreceiver_chat_id=<chat_with_your_bot>")
 
     Path(BASE_DIR / "sender.log").unlink(missing_ok=True)
     Path(BASE_DIR / "receiver.log").unlink(missing_ok=True)
