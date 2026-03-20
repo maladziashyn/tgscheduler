@@ -21,7 +21,7 @@ conn_str = "sqlite:///" + str(db_path)
 engine = create_engine(conn_str)
 creds = dotenv_values(BASE_DIR / ".env")
 bot_token = creds["bot_token"]
-chat_id = creds["chat_id"]
+chat_id = creds["sender_chat_id"]
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)

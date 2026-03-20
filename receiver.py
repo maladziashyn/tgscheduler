@@ -19,6 +19,7 @@ conn_str = "sqlite:///" + str(db_path)
 engine = create_engine(conn_str)
 
 creds = dotenv_values(BASE_DIR / ".env")
+receiver_chat_id = creds["receiver_chat_id"]
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -40,6 +41,9 @@ logger.addHandler(console_handler)
 
 
 async def handle_text(update, context):  # noqa: ARG001
+    if update.effective_chat.id != receiver_chat_id:
+        return
+
     text = update.message.text
     with Session(engine) as session:
         record = Content(message=text)
@@ -52,6 +56,9 @@ async def handle_text(update, context):  # noqa: ARG001
 
 
 async def handle_photo(update, context):  # noqa: ARG001
+    if update.effective_chat.id != receiver_chat_id:
+        return
+
     caption = update.message.caption
     if update.message.photo:
         doc = update.message.photo[-1]

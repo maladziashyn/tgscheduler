@@ -3,6 +3,7 @@
 BASE_DIR=$(dirname "$(realpath "$0")")
 PROJ=$(basename $BASE_DIR)
 WIN_MAIN="main"
+WIN_VIM="vim"
 WIN_GIT="git"
 
 SOURCE_VENV="source "${BASE_DIR}"/venv/bin/activate"
@@ -20,11 +21,15 @@ fi
 tmux new-session -d -s $PROJ -n $WIN_MAIN
 tmux send-keys -t $PROJ:$WIN_MAIN "$COMBO" C-m
 
+tmux new-window -t $PROJ -n $WIN_VIM
+tmux send-keys -t $PROJ:$WIN_VIM "cd "${BASE_DIR}" && clear" C-m
+tmux send-keys -t $PROJ:$WIN_VIM "ls" C-m
+
 tmux new-window -t $PROJ -n $WIN_GIT
 tmux send-keys -t $PROJ:$WIN_GIT "cd "${BASE_DIR}" && clear" C-m
 tmux send-keys -t $PROJ:$WIN_GIT "git status" C-m
 
-# tmux select-window -t $WIN_MAIN
+tmux select-window -t $WIN_VIM
 
 tmux attach-session -t $PROJ
 

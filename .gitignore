@@ -24,4 +24,5 @@ images/
 bot_data.db
 *.log
 *.ipynb
+*.swp
 
