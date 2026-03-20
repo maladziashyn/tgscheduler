@@ -41,7 +41,7 @@ logger.addHandler(console_handler)
 
 
 async def handle_text(update, context):  # noqa: ARG001
-    if update.effective_chat.id != receiver_chat_id:
+    if str(update.effective_chat.id) != receiver_chat_id:
         return
 
     text = update.message.text
@@ -56,7 +56,7 @@ async def handle_text(update, context):  # noqa: ARG001
 
 
 async def handle_photo(update, context):  # noqa: ARG001
-    if update.effective_chat.id != receiver_chat_id:
+    if str(update.effective_chat.id) != receiver_chat_id:
         return
 
     caption = update.message.caption
