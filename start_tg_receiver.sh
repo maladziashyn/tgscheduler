@@ -6,6 +6,14 @@ WIN_MAIN="rcv_main"
 SOURCE_VENV="source "${BASE_DIR}"/venv/bin/activate"
 COMBO="cd "${BASE_DIR}" && "${SOURCE_VENV}" && clear"
 
+# Wait until internet is reachable.
+until ping -c1 8.8.8.8 >/dev/null 2>&1; do
+    echo "Waiting for internet..."
+    sleep 2
+done
+
+echo "Internet is up, starting the script."
+
 # Exit if tmux session already exists.
 tmux has-session -t $PROJ 2>/dev/null
 if [ $? -eq 0 ]; then
