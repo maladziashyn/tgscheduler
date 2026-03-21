@@ -1,15 +1,13 @@
 #!/home/rsm/projects/tgscheduler/venv/bin/python3
 
-import logging
 from pathlib import Path
-from time import gmtime
 
 from dotenv import dotenv_values
-from logging.handlers import TimedRotatingFileHandler
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from telegram.ext import ApplicationBuilder, MessageHandler, filters
 
+from logging_config import setup_logger
 from models import Content
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -20,24 +18,7 @@ engine = create_engine(conn_str)
 
 creds = dotenv_values(BASE_DIR / ".env")
 receiver_chat_id = creds["receiver_chat_id"]
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-file_handler = TimedRotatingFileHandler(
-    filename=BASE_DIR / "receiver.log",
-    when="W0",      # Rotate every week (W0 = Monday)
-    interval=1,     # Every 1 week
-    backupCount=52, # Keep last N weeks of logs
-)
-console_handler = logging.StreamHandler()
-formatter = logging.Formatter(
-    "%(asctime)s:%(name)s:%(levelname)s:%(message)s",
-)
-logging.Formatter.converter = gmtime
-file_handler.setFormatter(formatter)
-console_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
-logger.addHandler(console_handler)
+logger = setup_logger(Path(__file__).stem)
 
 
 async def handle_text(update, context):  # noqa: ARG001
@@ -80,16 +61,6 @@ async def handle_photo(update, context):  # noqa: ARG001
     await update.message.reply_text(f"Image saved, id {record_id}.")
 
 
-#def print_me(txt):
-#    print(
-#        "\r",
-#        datetime.strftime(datetime.now(UTC), "%Y-%m-%d %H:%M:%S.%f")[:-3],
-#        txt,
-#        end="",
-#        flush=True
-#    )
-
-
 def main():
     app = ApplicationBuilder().token(creds["bot_token"]).build()
     app.add_handler(MessageHandler(
@@ -104,6 +75,6 @@ def main():
 
 
 if __name__ == "__main__":
-    logger.info("START receiver.py")
+    logger.info("START")
     main()
 

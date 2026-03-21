@@ -7,26 +7,40 @@ from models import Base
 from sqlalchemy import create_engine
 
 BASE_DIR = Path(__file__).resolve().parent
-db_path = Path(BASE_DIR / "bot_data.db")
-img_dir = Path(BASE_DIR / "images")
+db = BASE_DIR / "bot_data.db"
+img_dir = BASE_DIR / "images"
+log_dir = BASE_DIR / "log"
+env_file = BASE_DIR / ".env"
 
 def main():
-    db_path.touch()
-    engine = create_engine("sqlite:///" + str(db_path), echo=False)
+    db.unlink(missing_ok=True)
+    db.touch()
+    engine = create_engine("sqlite:///" + str(db), echo=False)
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
-    # Create images dir, empty .env file
-    if img_dir.exists:
-        shutil.rmtree(img_dir)
-    img_dir.mkdir(parents=True, exist_ok=True)
+    # Create images, log dir, empty .env file
+    for d in [img_dir, log_dir]:
+        if d.exists:
+            shutil.rmtree(d)
+        d.mkdir(parents=True, exist_ok=True)
 
-    #with Path(BASE_DIR / ".env").open("w") as f:
-    #    f.write("bot_token=<your_token>\nsender_chat_id=<target_chat_id>\nreceiver_chat_id=<chat_with_your_bot>")
+    with env_file.open("w") as f:
+        f.write(
+            "bot_token=<your_token>\n"
+            "sender_chat_id=<target_chat_id>\n"
+            "receiver_chat_id=<chat_with_your_bot>\n"
+        )
 
-    Path(BASE_DIR / "sender.log").unlink(missing_ok=True)
-    Path(BASE_DIR / "receiver.log").unlink(missing_ok=True)
 
 if __name__ == "__main__":
-    main()
+    answer = input(
+        "You're about to delete existing database, images, logs, .env, "
+        "and create them as empty files/directories. Continue? (y/n): "
+    ).strip().lower()
+    if answer == "y":
+        main()
+        print("Done")
+    else:
+        print("Aborted")
 

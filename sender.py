@@ -1,17 +1,15 @@
 #!/home/rsm/projects/tgscheduler/venv/bin/python3
 
 import asyncio
-import logging
-from logging.handlers import TimedRotatingFileHandler
 from random import choice
 from pathlib import Path
-from time import gmtime
 
 from dotenv import dotenv_values
-from sqlalchemy import create_engine, func, select, update
+from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session
 from telegram import Bot
 
+from logging_config import setup_logger
 from models import Content
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -23,23 +21,7 @@ creds = dotenv_values(BASE_DIR / ".env")
 bot_token = creds["bot_token"]
 chat_id = creds["sender_chat_id"]
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-file_handler = TimedRotatingFileHandler(
-    filename=BASE_DIR / "sender.log",
-    when="W0",      # Rotate every week (W0 = Monday)
-    interval=1,     # Every 1 week
-    backupCount=52, # Keep last N weeks of logs
-)
-console_handler = logging.StreamHandler()
-formatter = logging.Formatter(
-    "%(asctime)s:%(name)s:%(levelname)s:%(message)s",
-)
-logging.Formatter.converter = gmtime
-file_handler.setFormatter(formatter)
-console_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
-logger.addHandler(console_handler)
+logger = setup_logger(Path(__file__).stem)
 
 
 async def send_post():
