@@ -44,14 +44,12 @@ Add contents:
 
 ```
 [Unit]
-Description=TG receiver for cool photos
-After=network.target
+Description=TG receiver for images and text
+After=network-online.target
+Wants=network-online.target
 
 [Service]
-Type=oneshot
 ExecStart=/home/rsm/projects/tgscheduler/start_tg_receiver.sh
-RemainAfterExit=yes
-User=rsm
 
 [Install]
 WantedBy=multi-user.target
