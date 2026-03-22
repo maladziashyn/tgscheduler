@@ -22,7 +22,7 @@ def main():
     # Create images, log dir, empty .env file
     for d in [img_dir, log_dir]:
         if d.exists:
-            shutil.rmtree(d)
+            shutil.rmtree(d, ignore_errors=True)
         d.mkdir(parents=True, exist_ok=True)
 
     with env_file.open("w") as f:
