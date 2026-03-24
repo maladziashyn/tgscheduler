@@ -10,6 +10,8 @@ from telegram.ext import ApplicationBuilder, MessageHandler, filters
 from logging_config import setup_logger
 from models import Content
 
+TIMEOUT = 10
+
 BASE_DIR = Path(__file__).resolve().parent
 db_path = Path(BASE_DIR / "bot_data.db")
 img_dir = Path(BASE_DIR / "images")
@@ -45,7 +47,12 @@ async def handle_photo(update, context):  # noqa: ARG001
         doc = update.message.photo[-1]
     elif update.message.document:
         doc = update.message.document
-    file = await doc.get_file()
+    file = await doc.get_file(
+        read_timeout=TIMEOUT,
+        write_timeout=TIMEOUT,
+        connect_timeout=TIMEOUT,
+        pool_timeout=TIMEOUT,
+    )
     file_path = str(Path(img_dir / (file.file_unique_id + ".jpg")))
     await file.download_to_drive(file_path, read_timeout=30)
     with Session(engine) as session:
